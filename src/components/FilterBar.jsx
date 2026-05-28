@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
+import { ManufacturerFilter } from './ManufacturerFilter'
 
 const PER_PAGE_OPTIONS = [
   { label: '20', value: 20 },
@@ -66,22 +67,11 @@ export function FilterBar({
           className="border border-gray-300 rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        <select
-          multiple
-          value={selectedManufacturers}
-          onChange={(e) => {
-            const selected = Array.from(e.target.selectedOptions, (o) => o.value)
-            onManufacturersChange(selected)
-          }}
-          className="border border-gray-300 rounded px-2 py-1 text-sm h-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          title="Hold Ctrl / Cmd to select multiple manufacturers"
-        >
-          {manufacturers.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        <ManufacturerFilter
+          manufacturers={manufacturers}
+          selectedManufacturers={selectedManufacturers}
+          onChange={onManufacturersChange}
+        />
 
         <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
           <input
