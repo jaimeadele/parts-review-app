@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 const PER_PAGE_OPTIONS = [
   { label: '20', value: 20 },
@@ -26,8 +26,26 @@ export function FilterBar({
   totalPages,
   onPrevPage,
   onNextPage,
+  onGoToPage,
 }) {
   const fileInputRef = useRef(null)
+  const [pageInput, setPageInput] = useState(String(currentPage))
+
+  useEffect(() => {
+    setPageInput(String(currentPage))
+  }, [currentPage])
+
+  function handlePageKeyDown(e) {
+    if (e.key === 'Enter') {
+      const num = parseInt(pageInput, 10)
+      if (!isNaN(num) && num >= 1 && num <= totalPages) {
+        onGoToPage(num)
+      } else {
+        setPageInput(String(currentPage))
+      }
+      e.target.blur()
+    }
+  }
 
   function handleFileChange(e) {
     const file = e.target.files[0]
@@ -127,14 +145,33 @@ export function FilterBar({
         {totalPages > 1 && (
           <div className="flex items-center gap-2 ml-auto">
             <button
+              onClick={() => onGoToPage(1)}
+              disabled={currentPage <= 1}
+              className="px-2.5 py-0.5 text-sm rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+              title="First page"
+            >
+              «
+            </button>
+            <button
               onClick={onPrevPage}
               disabled={currentPage <= 1}
               className="px-2.5 py-0.5 text-sm rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               ← Prev
             </button>
-            <span className="text-sm text-gray-500">
-              Page {currentPage} of {totalPages}
+            <span className="flex items-center gap-1.5 text-sm text-gray-500">
+              Page
+              <input
+                type="number"
+                min={1}
+                max={totalPages}
+                value={pageInput}
+                onChange={(e) => setPageInput(e.target.value)}
+                onBlur={() => setPageInput(String(currentPage))}
+                onKeyDown={handlePageKeyDown}
+                className="w-14 text-center border border-gray-300 rounded px-1 py-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              of {totalPages}
             </span>
             <button
               onClick={onNextPage}
@@ -142,6 +179,14 @@ export function FilterBar({
               className="px-2.5 py-0.5 text-sm rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Next →
+            </button>
+            <button
+              onClick={() => onGoToPage(totalPages)}
+              disabled={currentPage >= totalPages}
+              className="px-2.5 py-0.5 text-sm rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+              title="Last page"
+            >
+              »
             </button>
           </div>
         )}

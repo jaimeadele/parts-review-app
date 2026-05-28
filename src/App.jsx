@@ -104,6 +104,7 @@ export default function App() {
         totalPages={totalPages}
         onPrevPage={() => setCurrentPage((p) => p - 1)}
         onNextPage={() => setCurrentPage((p) => p + 1)}
+        onGoToPage={setCurrentPage}
       />
 
       {importError && (
