@@ -14,8 +14,8 @@ export function FilterBar({
   manufacturers,
   selectedManufacturers,
   onManufacturersChange,
-  showMarkedOnly,
-  onShowMarkedOnlyChange,
+  viewFilter,
+  onViewFilterChange,
   totalCount,
   filteredCount,
   markedCount,
@@ -76,11 +76,21 @@ export function FilterBar({
         <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
           <input
             type="checkbox"
-            checked={showMarkedOnly}
-            onChange={(e) => onShowMarkedOnlyChange(e.target.checked)}
+            checked={viewFilter === 'marked'}
+            onChange={() => onViewFilterChange(viewFilter === 'marked' ? 'all' : 'marked')}
             className="accent-blue-600"
           />
           Show marked only
+        </label>
+
+        <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={viewFilter === 'unmarked'}
+            onChange={() => onViewFilterChange(viewFilter === 'unmarked' ? 'all' : 'unmarked')}
+            className="accent-blue-600"
+          />
+          Show unmarked only
         </label>
 
         <span className="text-sm text-gray-500 ml-auto">

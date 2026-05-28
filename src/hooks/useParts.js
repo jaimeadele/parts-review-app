@@ -15,7 +15,7 @@ function saveMarkedIds(ids) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ids))
 }
 
-export function useParts({ search, selectedManufacturers, showMarkedOnly }) {
+export function useParts({ search, selectedManufacturers, viewFilter }) {
   const [parts, setParts] = useState([])
   const [loading, setLoading] = useState(true)
   const [markedIds, setMarkedIds] = useState(() => loadMarkedIds())
@@ -39,7 +39,8 @@ export function useParts({ search, selectedManufacturers, showMarkedOnly }) {
   const filteredParts = useMemo(() => {
     const term = search.trim().toLowerCase()
     return parts.filter((p) => {
-      if (showMarkedOnly && !markedSet.has(p.id)) return false
+      if (viewFilter === 'marked' && !markedSet.has(p.id)) return false
+      if (viewFilter === 'unmarked' && markedSet.has(p.id)) return false
       if (selectedManufacturers.length > 0 && !selectedManufacturers.includes(p.manufacturer?.name)) return false
       if (term) {
         const inTitle = p.title?.toLowerCase().includes(term)
@@ -48,7 +49,7 @@ export function useParts({ search, selectedManufacturers, showMarkedOnly }) {
       }
       return true
     })
-  }, [parts, search, selectedManufacturers, showMarkedOnly, markedSet])
+  }, [parts, search, selectedManufacturers, viewFilter, markedSet])
 
   function markPart(id) {
     setMarkedIds((prev) => {

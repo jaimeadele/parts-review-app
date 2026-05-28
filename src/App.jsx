@@ -8,7 +8,7 @@ import { PartDetail } from './components/PartDetail'
 export default function App() {
   const [searchInput, setSearchInput] = useState('')
   const [selectedManufacturers, setSelectedManufacturers] = useState([])
-  const [showMarkedOnly, setShowMarkedOnly] = useState(false)
+  const [viewFilter, setViewFilter] = useState('all')
   const [selectedPartIndex, setSelectedPartIndex] = useState(null)
   const [importError, setImportError] = useState(null)
   const [itemsPerPage, setItemsPerPage] = useState(100)
@@ -30,12 +30,12 @@ export default function App() {
   } = useParts({
     search: debouncedSearch,
     selectedManufacturers,
-    showMarkedOnly,
+    viewFilter,
   })
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [debouncedSearch, selectedManufacturers, showMarkedOnly, itemsPerPage])
+  }, [debouncedSearch, selectedManufacturers, viewFilter, itemsPerPage])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -91,8 +91,8 @@ export default function App() {
         manufacturers={manufacturers}
         selectedManufacturers={selectedManufacturers}
         onManufacturersChange={setSelectedManufacturers}
-        showMarkedOnly={showMarkedOnly}
-        onShowMarkedOnlyChange={setShowMarkedOnly}
+        viewFilter={viewFilter}
+        onViewFilterChange={setViewFilter}
         totalCount={parts.length}
         filteredCount={filteredParts.length}
         markedCount={markedCount}
