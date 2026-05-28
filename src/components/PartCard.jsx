@@ -17,13 +17,19 @@ export function PartCard({ part, isMarked, onMark, onUnmark, onClick }) {
         isMarked ? 'border-l-4 border-l-green-500 border-t-gray-200 border-r-gray-200 border-b-gray-200' : 'border-gray-200'
       }`}
     >
-      {isMarked && (
-        <span className="absolute top-2 right-2 z-10 bg-green-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
-          ✓
-        </span>
-      )}
+      <button
+        onClick={handleMarkClick}
+        className={`absolute top-2 right-2 z-10 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+          isMarked
+            ? 'bg-green-500 text-white hover:bg-green-600'
+            : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
+        }`}
+        title={isMarked ? 'Unmark' : 'Mark for Website'}
+      >
+        ✓
+      </button>
 
-      <div className="h-40 bg-gray-100 flex-shrink-0">
+      <div className="h-40 bg-gray-100 shrink-0">
         <img
           src={imageUrl}
           alt={part.title}
