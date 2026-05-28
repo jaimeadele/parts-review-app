@@ -21,7 +21,7 @@ export function useParts({ search, selectedManufacturers, showMarkedOnly }) {
   const [markedIds, setMarkedIds] = useState(() => loadMarkedIds())
 
   useEffect(() => {
-    fetch('/parts.json')
+    fetch('public/parts.json')
       .then((res) => res.json())
       .then((data) => {
         setParts(data.parts)

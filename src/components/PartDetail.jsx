@@ -36,13 +36,19 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
   const allImages = part.images ?? []
 
   const [activeImage, setActiveImage] = useState(
-    primaryImageId ? buildImageUrl(primaryImageId) : (allImages[0] ?? '/default-image.jpg')
-  )
+    primaryImageId
+      ? buildImageUrl(primaryImageId)
+      : (allImages[0] ?? 'public/default-image.jpg')
+  );
 
   useEffect(() => {
     const primaryImageId = part.primary_image?.id
     const allImages = part.images ?? []
-    setActiveImage(primaryImageId ? buildImageUrl(primaryImageId) : (allImages[0] ?? '/default-image.jpg'))
+    setActiveImage(
+      primaryImageId
+        ? buildImageUrl(primaryImageId)
+        : (allImages[0] ?? 'public/default-image.jpg')
+    );
   }, [part])
 
   useEffect(() => {
