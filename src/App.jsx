@@ -1,122 +1,117 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useCallback } from 'react'
+import { useParts } from './hooks/useParts'
+import { useDebounce } from './hooks/useDebounce'
+import { FilterBar } from './components/FilterBar'
+import { PartGrid } from './components/PartGrid'
+import { PartDetail } from './components/PartDetail'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [searchInput, setSearchInput] = useState('')
+  const [selectedManufacturers, setSelectedManufacturers] = useState([])
+  const [showMarkedOnly, setShowMarkedOnly] = useState(false)
+  const [selectedPartIndex, setSelectedPartIndex] = useState(null)
+  const [importError, setImportError] = useState(null)
+
+  const debouncedSearch = useDebounce(searchInput, 300)
+
+  const {
+    parts,
+    loading,
+    filteredParts,
+    manufacturers,
+    markedSet,
+    markedCount,
+    markPart,
+    unmarkPart,
+    exportMarked,
+    importMarked,
+  } = useParts({
+    search: debouncedSearch,
+    selectedManufacturers,
+    showMarkedOnly,
+  })
+
+  const handleCardClick = useCallback(
+    (part) => {
+      const index = filteredParts.findIndex((p) => p.id === part.id)
+      setSelectedPartIndex(index)
+    },
+    [filteredParts]
+  )
+
+  async function handleImport(file) {
+    setImportError(null)
+    if (markedCount > 0) {
+      const ok = window.confirm(
+        `This will replace your ${markedCount} current marks with the imported marks. Continue?`
+      )
+      if (!ok) return
+    }
+    try {
+      await importMarked(file)
+    } catch (err) {
+      setImportError(err.message)
+    }
+  }
+
+  const selectedPart = selectedPartIndex !== null ? filteredParts[selectedPartIndex] : null
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        <div className="text-center">
+          <div className="text-4xl mb-4 animate-spin">⟳</div>
+          <p className="text-lg">Loading parts…</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-gray-50">
+      <FilterBar
+        search={searchInput}
+        onSearchChange={setSearchInput}
+        manufacturers={manufacturers}
+        selectedManufacturers={selectedManufacturers}
+        onManufacturersChange={setSelectedManufacturers}
+        showMarkedOnly={showMarkedOnly}
+        onShowMarkedOnlyChange={setShowMarkedOnly}
+        totalCount={parts.length}
+        filteredCount={filteredParts.length}
+        markedCount={markedCount}
+        onExport={exportMarked}
+        onImport={handleImport}
+      />
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {importError && (
+        <div className="mx-4 mt-3 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+          {importError}
+          <button onClick={() => setImportError(null)} className="ml-3 underline">Dismiss</button>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      <PartGrid
+        parts={filteredParts}
+        markedSet={markedSet}
+        onMark={markPart}
+        onUnmark={unmarkPart}
+        onCardClick={handleCardClick}
+      />
+
+      {selectedPart && (
+        <PartDetail
+          part={selectedPart}
+          isMarked={markedSet.has(selectedPart.id)}
+          onMark={markPart}
+          onUnmark={unmarkPart}
+          onClose={() => setSelectedPartIndex(null)}
+          onPrev={() => setSelectedPartIndex((i) => i - 1)}
+          onNext={() => setSelectedPartIndex((i) => i + 1)}
+          hasPrev={selectedPartIndex > 0}
+          hasNext={selectedPartIndex < filteredParts.length - 1}
+        />
+      )}
+    </div>
   )
 }
-
-export default App
