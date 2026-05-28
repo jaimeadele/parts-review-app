@@ -1,5 +1,12 @@
 import { useRef } from 'react'
 
+const PER_PAGE_OPTIONS = [
+  { label: '20', value: 20 },
+  { label: '50', value: 50 },
+  { label: '100', value: 100 },
+  { label: 'All', value: null },
+]
+
 export function FilterBar({
   search,
   onSearchChange,
@@ -13,6 +20,12 @@ export function FilterBar({
   markedCount,
   onExport,
   onImport,
+  itemsPerPage,
+  onItemsPerPageChange,
+  currentPage,
+  totalPages,
+  onPrevPage,
+  onNextPage,
 }) {
   const fileInputRef = useRef(null)
 
@@ -23,75 +36,116 @@ export function FilterBar({
     onImport(file)
   }
 
-  function handleImportClick() {
-    fileInputRef.current.click()
-  }
-
   return (
-    <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex flex-wrap items-center gap-3">
-      <input
-        type="search"
-        placeholder="Search by title or part number…"
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-        className="border border-gray-300 rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-
-      <select
-        multiple
-        value={selectedManufacturers}
-        onChange={(e) => {
-          const selected = Array.from(e.target.selectedOptions, (o) => o.value)
-          onManufacturersChange(selected)
-        }}
-        className="border border-gray-300 rounded px-2 py-1 text-sm h-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        title="Hold Ctrl / Cmd to select multiple manufacturers"
-      >
-        {manufacturers.map((name) => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
-      </select>
-
-      <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
+    <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-2">
+      {/* Row 1: filters + actions */}
+      <div className="flex flex-wrap items-center gap-3 py-1">
         <input
-          type="checkbox"
-          checked={showMarkedOnly}
-          onChange={(e) => onShowMarkedOnlyChange(e.target.checked)}
-          className="accent-blue-600"
+          type="search"
+          placeholder="Search by title or part number…"
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="border border-gray-300 rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        Show marked only
-      </label>
 
-      <span className="text-sm text-gray-500 ml-auto">
-        Showing {filteredCount.toLocaleString()} of {totalCount.toLocaleString()} parts
-        {' · '}
-        <strong className="text-gray-800">{markedCount.toLocaleString()} marked</strong>
-      </span>
+        <select
+          multiple
+          value={selectedManufacturers}
+          onChange={(e) => {
+            const selected = Array.from(e.target.selectedOptions, (o) => o.value)
+            onManufacturersChange(selected)
+          }}
+          className="border border-gray-300 rounded px-2 py-1 text-sm h-8 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          title="Hold Ctrl / Cmd to select multiple manufacturers"
+        >
+          {manufacturers.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
 
-      <button
-        onClick={onExport}
-        disabled={markedCount === 0}
-        className="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        Export
-      </button>
+        <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={showMarkedOnly}
+            onChange={(e) => onShowMarkedOnlyChange(e.target.checked)}
+            className="accent-blue-600"
+          />
+          Show marked only
+        </label>
 
-      <button
-        onClick={handleImportClick}
-        className="px-3 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
-      >
-        Import
-      </button>
+        <span className="text-sm text-gray-500 ml-auto">
+          Showing {filteredCount.toLocaleString()} of {totalCount.toLocaleString()} parts
+          {' · '}
+          <strong className="text-gray-800">{markedCount.toLocaleString()} marked</strong>
+        </span>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".json"
-        onChange={handleFileChange}
-        className="hidden"
-      />
+        <button
+          onClick={onExport}
+          disabled={markedCount === 0}
+          className="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Export
+        </button>
+
+        <button
+          onClick={() => fileInputRef.current.click()}
+          className="px-3 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+        >
+          Import
+        </button>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      </div>
+
+      {/* Row 2: pagination */}
+      <div className="flex items-center gap-3 py-1 border-t border-gray-100 mt-1">
+        <span className="text-sm text-gray-500">Per page:</span>
+        <div className="flex gap-1">
+          {PER_PAGE_OPTIONS.map((opt) => (
+            <button
+              key={opt.label}
+              onClick={() => onItemsPerPageChange(opt.value)}
+              className={`px-2.5 py-0.5 text-sm rounded border ${
+                itemsPerPage === opt.value
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              onClick={onPrevPage}
+              disabled={currentPage <= 1}
+              className="px-2.5 py-0.5 text-sm rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              ← Prev
+            </button>
+            <span className="text-sm text-gray-500">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={onNextPage}
+              disabled={currentPage >= totalPages}
+              className="px-2.5 py-0.5 text-sm rounded border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Next →
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

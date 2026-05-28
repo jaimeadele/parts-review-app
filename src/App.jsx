@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParts } from './hooks/useParts'
 import { useDebounce } from './hooks/useDebounce'
 import { FilterBar } from './components/FilterBar'
@@ -11,6 +11,8 @@ export default function App() {
   const [showMarkedOnly, setShowMarkedOnly] = useState(false)
   const [selectedPartIndex, setSelectedPartIndex] = useState(null)
   const [importError, setImportError] = useState(null)
+  const [itemsPerPage, setItemsPerPage] = useState(100)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const debouncedSearch = useDebounce(searchInput, 300)
 
@@ -31,12 +33,26 @@ export default function App() {
     showMarkedOnly,
   })
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [debouncedSearch, selectedManufacturers, showMarkedOnly, itemsPerPage])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [currentPage])
+
+  const totalPages = itemsPerPage === null ? 1 : Math.max(1, Math.ceil(filteredParts.length / itemsPerPage))
+
+  const pagedParts = itemsPerPage === null
+    ? filteredParts
+    : filteredParts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
   const handleCardClick = useCallback(
     (part) => {
-      const index = filteredParts.findIndex((p) => p.id === part.id)
+      const index = pagedParts.findIndex((p) => p.id === part.id)
       setSelectedPartIndex(index)
     },
-    [filteredParts]
+    [pagedParts]
   )
 
   async function handleImport(file) {
@@ -54,7 +70,7 @@ export default function App() {
     }
   }
 
-  const selectedPart = selectedPartIndex !== null ? filteredParts[selectedPartIndex] : null
+  const selectedPart = selectedPartIndex !== null ? pagedParts[selectedPartIndex] : null
 
   if (loading) {
     return (
@@ -82,6 +98,12 @@ export default function App() {
         markedCount={markedCount}
         onExport={exportMarked}
         onImport={handleImport}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={setItemsPerPage}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPrevPage={() => setCurrentPage((p) => p - 1)}
+        onNextPage={() => setCurrentPage((p) => p + 1)}
       />
 
       {importError && (
@@ -92,7 +114,7 @@ export default function App() {
       )}
 
       <PartGrid
-        parts={filteredParts}
+        parts={pagedParts}
         markedSet={markedSet}
         onMark={markPart}
         onUnmark={unmarkPart}
@@ -109,7 +131,7 @@ export default function App() {
           onPrev={() => setSelectedPartIndex((i) => i - 1)}
           onNext={() => setSelectedPartIndex((i) => i + 1)}
           hasPrev={selectedPartIndex > 0}
-          hasNext={selectedPartIndex < filteredParts.length - 1}
+          hasNext={selectedPartIndex < pagedParts.length - 1}
         />
       )}
     </div>
