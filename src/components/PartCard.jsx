@@ -3,7 +3,7 @@ const CDN_BASE = 'https://directus.multi.merciadev.com/assets'
 export function PartCard({ part, isMarked, onMark, onUnmark, onClick }) {
   const imageUrl = part.primary_image
     ? `${CDN_BASE}/${part.primary_image.id}?fit=inside&width=600`
-    : 'public/default-image.jpg';
+    : import.meta.env.BASE_URL + 'default-image.jpg';
 
   function handleMarkClick(e) {
     e.stopPropagation()

@@ -21,7 +21,7 @@ export function useParts({ search, selectedManufacturers, viewFilter }) {
   const [markedIds, setMarkedIds] = useState(() => loadMarkedIds())
 
   useEffect(() => {
-    fetch('public/parts.json')
+    fetch(import.meta.env.BASE_URL + 'parts.json')
       .then((res) => res.json())
       .then((data) => {
         setParts(data.parts)

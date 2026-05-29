@@ -38,7 +38,7 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
   const [activeImage, setActiveImage] = useState(
     primaryImageId
       ? buildImageUrl(primaryImageId)
-      : (allImages[0] ?? 'public/default-image.jpg')
+      : (allImages[0] ?? import.meta.env.BASE_URL + 'default-image.jpg')
   );
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
     setActiveImage(
       primaryImageId
         ? buildImageUrl(primaryImageId)
-        : (allImages[0] ?? 'public/default-image.jpg')
+        : (allImages[0] ?? import.meta.env.BASE_URL + 'default-image.jpg')
     );
   }, [part])
 
