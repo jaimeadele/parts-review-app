@@ -11,16 +11,31 @@ const PER_PAGE_OPTIONS = [
 export function FilterBar({
   search,
   onSearchChange,
+  showMarking,
+  // Parts-mode props
   manufacturers,
   selectedManufacturers,
   onManufacturersChange,
   viewFilter,
   onViewFilterChange,
-  totalCount,
-  filteredCount,
   markedCount,
   onExport,
   onImport,
+  // FHC-mode props
+  brands,
+  selectedBrands,
+  onBrandsChange,
+  categories,
+  selectedCategories,
+  onCategoriesChange,
+  availableSubcategories,
+  selectedSubcategories,
+  onSubcategoriesChange,
+  editedCount,
+  onExportEdits,
+  // Shared props
+  totalCount,
+  filteredCount,
   itemsPerPage,
   onItemsPerPageChange,
   currentPage,
@@ -67,60 +82,101 @@ export function FilterBar({
           className="border border-gray-300 rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        <ManufacturerFilter
-          manufacturers={manufacturers}
-          selectedManufacturers={selectedManufacturers}
-          onChange={onManufacturersChange}
-        />
+        {showMarking ? (
+          <>
+            <ManufacturerFilter
+              manufacturers={manufacturers}
+              selectedManufacturers={selectedManufacturers}
+              onChange={onManufacturersChange}
+            />
 
-        <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={viewFilter === 'marked'}
-            onChange={() => onViewFilterChange(viewFilter === 'marked' ? 'all' : 'marked')}
-            className="accent-blue-600"
-          />
-          Show marked only
-        </label>
+            <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={viewFilter === 'marked'}
+                onChange={() => onViewFilterChange(viewFilter === 'marked' ? 'all' : 'marked')}
+                className="accent-blue-600"
+              />
+              Show marked only
+            </label>
 
-        <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={viewFilter === 'unmarked'}
-            onChange={() => onViewFilterChange(viewFilter === 'unmarked' ? 'all' : 'unmarked')}
-            className="accent-blue-600"
-          />
-          Show unmarked only
-        </label>
+            <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={viewFilter === 'unmarked'}
+                onChange={() => onViewFilterChange(viewFilter === 'unmarked' ? 'all' : 'unmarked')}
+                className="accent-blue-600"
+              />
+              Show unmarked only
+            </label>
 
-        <span className="text-sm text-gray-500 ml-auto">
-          Showing {filteredCount.toLocaleString()} of {totalCount.toLocaleString()} parts
-          {' · '}
-          <strong className="text-gray-800">{markedCount.toLocaleString()} marked</strong>
-        </span>
+            <span className="text-sm text-gray-500 ml-auto">
+              Showing {filteredCount.toLocaleString()} of {totalCount.toLocaleString()} parts
+              {' · '}
+              <strong className="text-gray-800">{markedCount.toLocaleString()} marked</strong>
+            </span>
 
-        <button
-          onClick={onExport}
-          disabled={markedCount === 0}
-          className="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          Export
-        </button>
+            <button
+              onClick={onExport}
+              disabled={markedCount === 0}
+              className="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Export
+            </button>
 
-        <button
-          onClick={() => fileInputRef.current.click()}
-          className="px-3 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
-        >
-          Import
-        </button>
+            <button
+              onClick={() => fileInputRef.current.click()}
+              className="px-3 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              Import
+            </button>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json"
-          onChange={handleFileChange}
-          className="hidden"
-        />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </>
+        ) : (
+          <>
+            <ManufacturerFilter
+              manufacturers={brands}
+              selectedManufacturers={selectedBrands}
+              onChange={onBrandsChange}
+              placeholder="Filter by Brand"
+            />
+
+            <ManufacturerFilter
+              manufacturers={categories}
+              selectedManufacturers={selectedCategories}
+              onChange={onCategoriesChange}
+              placeholder="Filter by Category"
+            />
+
+            <ManufacturerFilter
+              manufacturers={availableSubcategories}
+              selectedManufacturers={selectedSubcategories}
+              onChange={onSubcategoriesChange}
+              placeholder="Filter by Subcategory"
+            />
+
+            <span className="text-sm text-gray-500 ml-auto">
+              Showing {filteredCount.toLocaleString()} of {totalCount.toLocaleString()} products
+              {' · '}
+              <strong className="text-gray-800">{editedCount.toLocaleString()} edited</strong>
+            </span>
+
+            <button
+              onClick={onExportEdits}
+              disabled={editedCount === 0}
+              className="px-3 py-1.5 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Export Edits
+            </button>
+          </>
+        )}
       </div>
 
       {/* Row 2: pagination */}
