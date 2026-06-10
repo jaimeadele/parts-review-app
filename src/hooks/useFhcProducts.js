@@ -22,6 +22,7 @@ function normalizeProduct(p) {
     attributes: {
       ...(p.description ? { Description: p.description } : {}),
     },
+    documents: Array.isArray(p.documents) ? p.documents : [],
   }
 }
 
