@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 function DetailSection({ title, data }) {
   if (!data || Object.keys(data).length === 0) return null
@@ -61,14 +61,17 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
 
   const imageUrl = part._imageUrl ?? import.meta.env.BASE_URL + 'default-image.jpg'
   const isEdited = !!editsMap[part.id]
+  const mouseDownOnBackdrop = useRef(false)
 
   return (
     <div
       className='fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-8 px-4'
-      onClick={onClose}
+      onMouseDown={(e) => { mouseDownOnBackdrop.current = e.target === e.currentTarget }}
+      onClick={() => { if (mouseDownOnBackdrop.current) onClose() }}
     >
       <div
         className='bg-white rounded-lg w-full max-w-3xl relative'
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
