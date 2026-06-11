@@ -131,29 +131,6 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
                 </span>
               )}
             </h3>
-            {isEditing ? (
-              <div className='flex gap-3'>
-                <button
-                  onClick={handleCancel}
-                  className='text-sm text-gray-500 hover:text-gray-700'
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  className='text-sm font-medium text-blue-600 hover:text-blue-800'
-                >
-                  Save
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                className='text-sm text-blue-600 hover:text-blue-800'
-              >
-                Edit
-              </button>
-            )}
           </div>
 
           <div className='space-y-3'>
@@ -204,6 +181,31 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
                 </p>
               )}
             </div>
+            {isEditing ? (
+              <div className='align-right flex justify-end gap-4 mt-2 mr-4'>
+                <button
+                  onClick={handleCancel}
+                  className='text-sm text-gray-500 hover:text-gray-700 bg-gray-200 hover:bg-gray-300 px-3 py-1.5 rounded'
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  className='text-sm font-medium text-white bg-blue-600 hover:bg-blue-800 px-3 py-1.5 rounded'
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <div className='align-right flex justify-end mt-2 mr-4'>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className='text-sm text-white bg-blue-600 hover:bg-blue-800 px-3 py-1.5 rounded'
+                >
+                  Edit
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -237,14 +239,14 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
         <div className='flex justify-between items-center px-6 pb-6 pt-4 mt-4 border-t border-gray-100'>
           <button
             onClick={onPrev}
-            disabled={!hasPrev}
+            disabled={!hasPrev || isEditing}
             className='px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed'
           >
             ← Prev
           </button>
           <button
             onClick={onNext}
-            disabled={!hasNext}
+            disabled={!hasNext || isEditing}
             className='px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed'
           >
             Next →
