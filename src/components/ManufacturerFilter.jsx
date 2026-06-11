@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 
-export function ManufacturerFilter({ manufacturers, selectedManufacturers, onChange }) {
+export function ManufacturerFilter({ manufacturers, selectedManufacturers, onChange, placeholder = 'Filter by Manufacturer' }) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef(null)
   const allCheckboxRef = useRef(null)
@@ -36,7 +36,7 @@ export function ManufacturerFilter({ manufacturers, selectedManufacturers, onCha
 
   const label =
     selectedManufacturers.length === 0
-      ? 'Filter by Manufacturer'
+      ? placeholder
       : selectedManufacturers.length === 1
       ? selectedManufacturers[0]
       : `${selectedManufacturers.length} selected`
@@ -45,7 +45,7 @@ export function ManufacturerFilter({ manufacturers, selectedManufacturers, onCha
     <div ref={containerRef} className="relative">
       <button
         onClick={() => setIsOpen((o) => !o)}
-        className={`border rounded px-3 py-1.5 text-sm bg-white flex items-center gap-2 min-w-[200px] justify-between ${
+        className={`border rounded px-3 py-1.5 text-sm bg-white flex items-center gap-2 min-w-50 justify-between ${
           selectedManufacturers.length > 0
             ? 'border-blue-500 text-blue-700'
             : 'border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -56,7 +56,7 @@ export function ManufacturerFilter({ manufacturers, selectedManufacturers, onCha
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-20 max-h-72 overflow-y-auto min-w-[220px]">
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-20 max-h-72 overflow-y-auto min-w-55">
           <label className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer border-b border-gray-100">
             <input
               ref={allCheckboxRef}

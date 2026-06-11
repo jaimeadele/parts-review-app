@@ -6,7 +6,7 @@ const CARD_HEIGHT = 280
 const GAP = 16
 const COLUMNS = 4
 
-export function PartGrid({ parts, markedSet, onMark, onUnmark, onCardClick }) {
+export function PartGrid({ parts, markedSet, onMark, onUnmark, onCardClick, showMarking = true, editsMap = {} }) {
   const parentRef = useRef(null)
 
   const rows = useMemo(() => {
@@ -26,7 +26,7 @@ export function PartGrid({ parts, markedSet, onMark, onUnmark, onCardClick }) {
   if (parts.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
-        No parts match your filters.
+        No items match your filters.
       </div>
     )
   }
@@ -61,6 +61,8 @@ export function PartGrid({ parts, markedSet, onMark, onUnmark, onCardClick }) {
                   onMark={onMark}
                   onUnmark={onUnmark}
                   onClick={() => onCardClick(part)}
+                  showMarking={showMarking}
+                  isEdited={!!editsMap[part.id]}
                 />
               ))}
             </div>

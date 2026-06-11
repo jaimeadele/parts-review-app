@@ -1,9 +1,11 @@
 const CDN_BASE = 'https://directus.multi.merciadev.com/assets'
 
-export function PartCard({ part, isMarked, onMark, onUnmark, onClick }) {
-  const imageUrl = part.primary_image
-    ? `${CDN_BASE}/${part.primary_image.id}?fit=inside&width=600`
-    : import.meta.env.BASE_URL + 'default-image.jpg';
+export function PartCard({ part, isMarked, onMark, onUnmark, onClick, showMarking = true, isEdited = false }) {
+  const imageUrl =
+    part._imageUrl ??
+    (part.primary_image
+      ? `${CDN_BASE}/${part.primary_image.id}?fit=inside&width=600`
+      : import.meta.env.BASE_URL + 'default-image.jpg')
 
   function handleMarkClick(e) {
     e.stopPropagation()
@@ -13,21 +15,25 @@ export function PartCard({ part, isMarked, onMark, onUnmark, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`relative flex flex-col bg-white rounded border cursor-pointer hover:shadow-md transition-shadow h-[280px] overflow-hidden ${
+      className={`relative flex flex-col bg-white rounded border cursor-pointer hover:shadow-md transition-shadow h-70 overflow-hidden ${
         isMarked ? 'border-l-4 border-l-green-500 border-t-gray-200 border-r-gray-200 border-b-gray-200' : 'border-gray-200'
       }`}
     >
-      <button
-        onClick={handleMarkClick}
-        className={`absolute top-2 right-2 z-10 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-          isMarked
-            ? 'bg-green-500 text-white hover:bg-green-600'
-            : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
-        }`}
-        title={isMarked ? 'Unmark' : 'Mark for Website'}
-      >
-        ✓
-      </button>
+      {showMarking ? (
+        <button
+          onClick={handleMarkClick}
+          className={`absolute top-2 right-2 z-10 text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+            isMarked
+              ? 'bg-green-500 text-white hover:bg-green-600'
+              : 'bg-gray-200 text-gray-400 hover:bg-gray-300'
+          }`}
+          title={isMarked ? 'Unmark' : 'Mark for Website'}
+        >
+          ✓
+        </button>
+      ) : isEdited ? (
+        <span className="absolute top-2 right-2 z-10 w-2.5 h-2.5 rounded-full bg-blue-500" title="Edited" />
+      ) : null}
 
       <div className="h-40 bg-gray-100 shrink-0">
         <img
@@ -45,16 +51,18 @@ export function PartCard({ part, isMarked, onMark, onUnmark, onClick }) {
         </p>
         <p className="text-xs text-gray-400 truncate mt-0.5">{part.part_number}</p>
 
-        <button
-          onClick={handleMarkClick}
-          className={`mt-2 w-full text-xs py-1 rounded font-medium ${
-            isMarked
-              ? 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          {isMarked ? '✓ Marked' : 'Mark for Website'}
-        </button>
+        {showMarking && (
+          <button
+            onClick={handleMarkClick}
+            className={`mt-2 w-full text-xs py-1 rounded font-medium ${
+              isMarked
+                ? 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            {isMarked ? '✓ Marked' : 'Mark for Website'}
+          </button>
+        )}
       </div>
     </div>
   )
