@@ -23,11 +23,13 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
   const [description, setDescription] = useState(edits.description ?? part.attributes?.Description ?? '')
   const [category, setCategory] = useState(edits.category ?? part.category ?? '')
   const [subcategory, setSubcategory] = useState(edits.subcategory ?? part.subcategory ?? '')
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditingDescription, setIsEditingDescription] = useState(false)
+  const [isEditingCatSubcat, setIsEditingCatSubcat] = useState(false)
 
   // Reset form and exit edit mode when navigating to a different product
   useEffect(() => {
-    setIsEditing(false)
+    setIsEditingDescription(false)
+    setIsEditingCatSubcat(false)
     const e = editsMap[part.id] ?? {}
     setDescription(e.description ?? part.attributes?.Description ?? '')
     setCategory(e.category ?? part.category ?? '')
@@ -46,19 +48,30 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
     return () => window.removeEventListener('keydown', handleKey)
   }, [onClose, onPrev, onNext, hasPrev, hasNext])
 
-  function handleSave() {
+  function handleSaveDescription() {
     onSaveEdits(part.id, { description, category, subcategory })
-    setIsEditing(false)
+    setIsEditingDescription(false)
   }
 
-  function handleCancel() {
+  function handleCancelDescription() {
     const e = editsMap[part.id] ?? {}
     setDescription(e.description ?? part.attributes?.Description ?? '')
-    setCategory(e.category ?? part.category ?? '')
-    setSubcategory(e.subcategory ?? part.subcategory ?? '')
-    setIsEditing(false)
+    setIsEditingDescription(false)
   }
 
+  function handleSaveCatSubcat() {
+    onSaveEdits(part.id, { description, category, subcategory })
+    setIsEditingCatSubcat(false)
+  }
+
+  function handleCancelCatSubcat() {
+    const e = editsMap[part.id] ?? {}
+    setCategory(e.category ?? part.category ?? '')
+    setSubcategory(e.subcategory ?? part.subcategory ?? '')
+    setIsEditingCatSubcat(false)
+  }
+
+  const isAnyEditing = isEditingDescription || isEditingCatSubcat
   const imageUrl = part._imageUrl ?? import.meta.env.BASE_URL + 'default-image.jpg'
   const isEdited = !!editsMap[part.id]
   const mouseDownOnBackdrop = useRef(false)
@@ -123,12 +136,12 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
           <DetailSection title='Details' data={part.details} />
         </div>
 
-        {/* Info section (view or edit mode) */}
+        {/* Info section */}
         <div className='px-6 mt-4 pb-2'>
           <div className='flex items-center justify-between mb-3'>
             <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide'>
               Info
-              {isEdited && !isEditing && (
+              {isEdited && !isAnyEditing && (
                 <span className='ml-2 text-xs text-blue-600 normal-case font-normal'>
                   edited
                 </span>
@@ -137,9 +150,10 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
           </div>
 
           <div className='space-y-3'>
+            {/* Category */}
             <div>
               <p className='text-sm font-medium text-gray-700 mb-1'>Category</p>
-              {isEditing ? (
+              {isEditingCatSubcat ? (
                 <input
                   type='text'
                   value={category}
@@ -151,11 +165,10 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
               )}
             </div>
 
+            {/* Subcategory */}
             <div>
-              <p className='text-sm font-medium text-gray-700 mb-1'>
-                Subcategory
-              </p>
-              {isEditing ? (
+              <p className='text-sm font-medium text-gray-700 mb-1'>Subcategory</p>
+              {isEditingCatSubcat ? (
                 <input
                   type='text'
                   value={subcategory}
@@ -167,11 +180,38 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
               )}
             </div>
 
+            {/* Category/subcategory edit controls */}
+            {isEditingCatSubcat ? (
+              <div className='flex justify-end gap-4 mt-2 mr-4'>
+                <button
+                  onClick={handleCancelCatSubcat}
+                  className='text-sm text-gray-500 hover:text-gray-700 bg-gray-200 hover:bg-gray-300 px-3 py-1.5 rounded'
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveCatSubcat}
+                  className='text-sm font-medium text-white bg-blue-600 hover:bg-blue-800 px-3 py-1.5 rounded'
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <div className='flex justify-end mt-2 mr-4'>
+                <button
+                  onClick={() => setIsEditingCatSubcat(true)}
+                  disabled={isEditingDescription}
+                  className='text-sm text-white bg-blue-600 hover:bg-blue-800 px-3 py-1.5 rounded disabled:opacity-40 disabled:cursor-not-allowed'
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+
+            {/* Description */}
             <div>
-              <p className='text-sm font-medium text-gray-700 mb-1'>
-                Description
-              </p>
-              {isEditing ? (
+              <p className='text-sm font-medium text-gray-700 mb-1'>Description</p>
+              {isEditingDescription ? (
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -184,26 +224,29 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
                 </p>
               )}
             </div>
-            {isEditing ? (
-              <div className='align-right flex justify-end gap-4 mt-2 mr-4'>
+
+            {/* Description edit controls */}
+            {isEditingDescription ? (
+              <div className='flex justify-end gap-4 mt-2 mr-4'>
                 <button
-                  onClick={handleCancel}
+                  onClick={handleCancelDescription}
                   className='text-sm text-gray-500 hover:text-gray-700 bg-gray-200 hover:bg-gray-300 px-3 py-1.5 rounded'
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={handleSave}
+                  onClick={handleSaveDescription}
                   className='text-sm font-medium text-white bg-blue-600 hover:bg-blue-800 px-3 py-1.5 rounded'
                 >
                   Save
                 </button>
               </div>
             ) : (
-              <div className='align-right flex justify-end mt-2 mr-4'>
+              <div className='flex justify-end mt-2 mr-4'>
                 <button
-                  onClick={() => setIsEditing(true)}
-                  className='text-sm text-white bg-blue-600 hover:bg-blue-800 px-3 py-1.5 rounded'
+                  onClick={() => setIsEditingDescription(true)}
+                  disabled={isEditingCatSubcat}
+                  className='text-sm text-white bg-blue-600 hover:bg-blue-800 px-3 py-1.5 rounded disabled:opacity-40 disabled:cursor-not-allowed'
                 >
                   Edit
                 </button>
@@ -242,14 +285,14 @@ export function FhcProductDetail({ part, editsMap, onSaveEdits, onClose, onPrev,
         <div className='flex justify-between items-center px-6 pb-6 pt-4 mt-4 border-t border-gray-100'>
           <button
             onClick={onPrev}
-            disabled={!hasPrev || isEditing}
+            disabled={!hasPrev || isAnyEditing}
             className='px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed'
           >
             ← Prev
           </button>
           <button
             onClick={onNext}
-            disabled={!hasNext || isEditing}
+            disabled={!hasNext || isAnyEditing}
             className='px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed'
           >
             Next →
