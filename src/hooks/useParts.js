@@ -15,7 +15,7 @@ function saveMarkedIds(ids) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ids))
 }
 
-export function useParts({ search, selectedManufacturers, viewFilter }) {
+export function useParts({ search, selectedManufacturers, viewFilter, priceFilter }) {
   const [parts, setParts] = useState([])
   const [loading, setLoading] = useState(true)
   const [markedIds, setMarkedIds] = useState(() => loadMarkedIds())
@@ -42,6 +42,7 @@ export function useParts({ search, selectedManufacturers, viewFilter }) {
       if (viewFilter === 'marked' && !markedSet.has(p.id)) return false
       if (viewFilter === 'unmarked' && markedSet.has(p.id)) return false
       if (selectedManufacturers.length > 0 && !selectedManufacturers.includes(p.manufacturer?.name)) return false
+      if (priceFilter.length > 0 && !priceFilter.some((field) => p[field] != null)) return false
       if (term) {
         const inTitle = p.title?.toLowerCase().includes(term)
         const inNumber = p.part_number?.toLowerCase().includes(term)
@@ -49,7 +50,7 @@ export function useParts({ search, selectedManufacturers, viewFilter }) {
       }
       return true
     })
-  }, [parts, search, selectedManufacturers, viewFilter, markedSet])
+  }, [parts, search, selectedManufacturers, viewFilter, priceFilter, markedSet])
 
   function markPart(id) {
     setMarkedIds((prev) => {

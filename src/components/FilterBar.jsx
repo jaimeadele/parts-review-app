@@ -1,6 +1,77 @@
 import { useRef, useState, useEffect } from 'react'
 import { ManufacturerFilter } from './ManufacturerFilter'
 
+const PRICE_OPTIONS = [
+  { key: 'partssource_price', label: 'PartsSource Price' },
+  { key: 'outrightListPrice', label: 'Outright Price' },
+  { key: 'oemListPrice', label: 'OEM Price' },
+]
+
+function PriceFilter({ selected, onChange }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
+
+  function toggle(key) {
+    if (selected.includes(key)) {
+      onChange(selected.filter((k) => k !== key))
+    } else {
+      onChange([...selected, key])
+    }
+  }
+
+  const label =
+    selected.length === 0
+      ? 'Filter by Price'
+      : selected.length === 1
+      ? PRICE_OPTIONS.find((o) => o.key === selected[0])?.label
+      : `${selected.length} selected`
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        onClick={() => setIsOpen((o) => !o)}
+        className={`border rounded px-3 py-1.5 text-sm bg-white flex items-center gap-2 min-w-50 justify-between ${
+          selected.length > 0
+            ? 'border-blue-500 text-blue-700'
+            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+        }`}
+      >
+        <span className="truncate">{label}</span>
+        <span className="text-gray-400 text-xs">{isOpen ? '▲' : '▼'}</span>
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-20 min-w-48">
+          {PRICE_OPTIONS.map((opt) => (
+            <label
+              key={opt.key}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={selected.includes(opt.key)}
+                onChange={() => toggle(opt.key)}
+                className="accent-blue-600"
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 const PER_PAGE_OPTIONS = [
   { label: '20', value: 20 },
   { label: '50', value: 50 },
@@ -16,6 +87,8 @@ export function FilterBar({
   manufacturers,
   selectedManufacturers,
   onManufacturersChange,
+  selectedPriceFilters,
+  onPriceFiltersChange,
   viewFilter,
   onViewFilterChange,
   markedCount,
@@ -88,6 +161,11 @@ export function FilterBar({
               manufacturers={manufacturers}
               selectedManufacturers={selectedManufacturers}
               onChange={onManufacturersChange}
+            />
+
+            <PriceFilter
+              selected={selectedPriceFilters}
+              onChange={onPriceFiltersChange}
             />
 
             <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer select-none">

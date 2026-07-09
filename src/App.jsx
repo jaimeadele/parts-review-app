@@ -12,6 +12,7 @@ export default function App() {
   const [activeDataset, setActiveDataset] = useState('parts')
   const [searchInput, setSearchInput] = useState('')
   const [selectedManufacturers, setSelectedManufacturers] = useState([])
+  const [selectedPriceFilters, setSelectedPriceFilters] = useState([])
   const [selectedBrands, setSelectedBrands] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
   const [selectedSubcategories, setSelectedSubcategories] = useState([])
@@ -27,6 +28,7 @@ export default function App() {
     search: debouncedSearch,
     selectedManufacturers,
     viewFilter,
+    priceFilter: selectedPriceFilters,
   })
 
   const fhcData = useFhcProducts({
@@ -45,6 +47,7 @@ export default function App() {
   useEffect(() => {
     setSearchInput('')
     setSelectedManufacturers([])
+    setSelectedPriceFilters([])
     setSelectedBrands([])
     setSelectedCategories([])
     setSelectedSubcategories([])
@@ -56,7 +59,7 @@ export default function App() {
   // Reset to page 1 when filters or items-per-page change
   useEffect(() => {
     setCurrentPage(1)
-  }, [debouncedSearch, selectedManufacturers, selectedBrands, selectedCategories, selectedSubcategories, viewFilter, itemsPerPage])
+  }, [debouncedSearch, selectedManufacturers, selectedPriceFilters, selectedBrands, selectedCategories, selectedSubcategories, viewFilter, itemsPerPage])
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -137,6 +140,8 @@ export default function App() {
             manufacturers={partsData.manufacturers}
             selectedManufacturers={selectedManufacturers}
             onManufacturersChange={setSelectedManufacturers}
+            selectedPriceFilters={selectedPriceFilters}
+            onPriceFiltersChange={setSelectedPriceFilters}
             viewFilter={viewFilter}
             onViewFilterChange={setViewFilter}
             markedCount={partsData.markedCount}
