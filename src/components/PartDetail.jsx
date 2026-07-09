@@ -77,8 +77,8 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
       >
         {/* Header */}
         <div className='flex items-start justify-between p-6 pb-0'>
-          <div className='flex-1 pr-4'>
-            <h2 className='text-xl font-bold text-gray-900 leading-snug'>
+          <div className='flex-1 pr-4 min-h-26'>
+            <h2 className='text-xl font-bold text-gray-900 leading-snug line-clamp-2'>
               {part.title}
             </h2>
             <p className='text-sm text-gray-500 mt-1'>{part.part_number}</p>
@@ -115,10 +115,9 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
           />
         </div>
 
-        {/* Thumbnails */}
-        {thumbnails.length > 1 && (
-          <div className='px-6 mt-3 flex gap-2 overflow-x-auto pb-1'>
-            {thumbnails.map((url, i) => (
+        {/* Thumbnails — always reserve space for consistent layout */}
+        <div className='px-6 mt-3 flex gap-2 overflow-x-auto pb-1 h-[72px]'>
+          {thumbnails.length > 1 && thumbnails.map((url, i) => (
               <img
                 key={i}
                 src={url}
@@ -131,8 +130,7 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
                 }`}
               />
             ))}
-          </div>
-        )}
+        </div>
 
         {/* Mark button */}
         <div className='px-6 mt-4'>
