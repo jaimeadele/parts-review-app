@@ -68,25 +68,31 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-8 px-4"
+      className='fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-8 px-4'
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg w-full max-w-3xl relative"
+        className='bg-white rounded-lg w-full max-w-3xl relative'
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-6 pb-0">
-          <div className="flex-1 pr-4">
-            <h2 className="text-xl font-bold text-gray-900 leading-snug">{part.title}</h2>
-            <p className="text-sm text-gray-500 mt-1">{part.part_number}</p>
-            {part.subheading && <p className="text-sm text-gray-600 mt-1 italic">{part.subheading}</p>}
+        <div className='flex items-start justify-between p-6 pb-0'>
+          <div className='flex-1 pr-4'>
+            <h2 className='text-xl font-bold text-gray-900 leading-snug'>
+              {part.title}
+            </h2>
+            <p className='text-sm text-gray-500 mt-1'>{part.part_number}</p>
+            {part.subheading && (
+              <p className='text-sm text-gray-600 mt-1 italic'>
+                {part.subheading}
+              </p>
+            )}
             {part.manufacturer && (
               <a
                 href={part.url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-blue-600 hover:underline mt-1 inline-block"
+                target='_blank'
+                rel='noreferrer'
+                className='text-sm text-blue-600 hover:underline mt-1 inline-block'
               >
                 {part.manufacturer.name} ↗
               </a>
@@ -94,32 +100,34 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none shrink-0"
+            className='text-gray-400 hover:text-gray-600 text-2xl leading-none shrink-0'
           >
             ✕
           </button>
         </div>
 
         {/* Main image */}
-        <div className="px-6 mt-4">
+        <div className='px-6 mt-4'>
           <img
             src={activeImage}
             alt={part.title}
-            className="w-full rounded object-contain max-h-80 bg-gray-50"
+            className='w-full rounded object-contain max-h-80 bg-gray-50'
           />
         </div>
 
         {/* Thumbnails */}
         {thumbnails.length > 1 && (
-          <div className="px-6 mt-3 flex gap-2 overflow-x-auto pb-1">
+          <div className='px-6 mt-3 flex gap-2 overflow-x-auto pb-1'>
             {thumbnails.map((url, i) => (
               <img
                 key={i}
                 src={url}
-                alt=""
+                alt=''
                 onClick={() => setActiveImage(url)}
                 className={`h-16 w-16 object-cover rounded cursor-pointer shrink-0 border-2 ${
-                  activeImage === url ? 'border-blue-500' : 'border-transparent hover:border-gray-300'
+                  activeImage === url
+                    ? 'border-blue-500'
+                    : 'border-transparent hover:border-gray-300'
                 }`}
               />
             ))}
@@ -127,9 +135,9 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
         )}
 
         {/* Mark button */}
-        <div className="px-6 mt-4">
+        <div className='px-6 mt-4'>
           <button
-            onClick={() => isMarked ? onUnmark(part.id) : onMark(part.id)}
+            onClick={() => (isMarked ? onUnmark(part.id) : onMark(part.id))}
             className={`w-full py-2 rounded font-medium text-sm ${
               isMarked
                 ? 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100'
@@ -140,27 +148,57 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
           </button>
         </div>
 
+        {/* Prev / Next */}
+        <div className='flex justify-between items-center px-6 pb-6 pt-2 border-t border-gray-100'>
+          <button
+            onClick={onPrev}
+            disabled={!hasPrev}
+            className='px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed'
+          >
+            ← Prev
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!hasNext}
+            className='px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed'
+          >
+            Next →
+          </button>
+        </div>
+
         {/* Pricing */}
-        {(part.partssource_price != null || part.outrightListPrice != null || part.oemListPrice != null) && (
-          <div className="px-6 mt-4">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Pricing</h3>
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+        {(part.partssource_price != null ||
+          part.outrightListPrice != null ||
+          part.oemListPrice != null) && (
+          <div className='px-6 mt-4'>
+            <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2'>
+              Pricing
+            </h3>
+            <dl className='grid grid-cols-2 gap-x-4 gap-y-1 text-sm'>
               {part.partssource_price != null && (
-                <div className="contents">
-                  <dt className="text-gray-500 font-medium">PartsSource Price</dt>
-                  <dd className="text-gray-800">${part.partssource_price.toFixed(2)}</dd>
+                <div className='contents'>
+                  <dt className='text-gray-500 font-medium'>
+                    PartsSource Price
+                  </dt>
+                  <dd className='text-gray-800'>
+                    ${part.partssource_price.toFixed(2)}
+                  </dd>
                 </div>
               )}
               {part.outrightListPrice != null && (
-                <div className="contents">
-                  <dt className="text-gray-500 font-medium">Outright Price</dt>
-                  <dd className="text-gray-800">${part.outrightListPrice.toFixed(2)}</dd>
+                <div className='contents'>
+                  <dt className='text-gray-500 font-medium'>Outright Price</dt>
+                  <dd className='text-gray-800'>
+                    ${part.outrightListPrice.toFixed(2)}
+                  </dd>
                 </div>
               )}
               {part.oemListPrice != null && (
-                <div className="contents">
-                  <dt className="text-gray-500 font-medium">OEM Price</dt>
-                  <dd className="text-gray-800">${part.oemListPrice.toFixed(2)}</dd>
+                <div className='contents'>
+                  <dt className='text-gray-500 font-medium'>OEM Price</dt>
+                  <dd className='text-gray-800'>
+                    ${part.oemListPrice.toFixed(2)}
+                  </dd>
                 </div>
               )}
             </dl>
@@ -168,29 +206,11 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
         )}
 
         {/* Details and attributes */}
-        <div className="px-6 pb-6">
-          <DetailSection title="Details" data={part.details} />
-          <DetailSection title="Attributes" data={part.attributes} />
-        </div>
-
-        {/* Prev / Next */}
-        <div className="flex justify-between items-center px-6 pb-6 pt-2 border-t border-gray-100">
-          <button
-            onClick={onPrev}
-            disabled={!hasPrev}
-            className="px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            ← Prev
-          </button>
-          <button
-            onClick={onNext}
-            disabled={!hasNext}
-            className="px-4 py-1.5 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Next →
-          </button>
+        <div className='px-6 pb-6'>
+          <DetailSection title='Details' data={part.details} />
+          <DetailSection title='Attributes' data={part.attributes} />
         </div>
       </div>
     </div>
-  )
+  );
 }
