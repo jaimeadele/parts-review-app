@@ -107,7 +107,7 @@ export default function App() {
               : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}
         >
-          Machinio Parts
+          Multi Parts
         </button>
         <button
           onClick={() => setActiveDataset('fhc')}
