@@ -140,6 +140,33 @@ export function PartDetail({ part, isMarked, onMark, onUnmark, onClose, onPrev, 
           </button>
         </div>
 
+        {/* Pricing */}
+        {(part.partssource_price != null || part.outrightListPrice != null || part.oemListPrice != null) && (
+          <div className="px-6 mt-4">
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Pricing</h3>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+              {part.partssource_price != null && (
+                <div className="contents">
+                  <dt className="text-gray-500 font-medium">PartsSource Price</dt>
+                  <dd className="text-gray-800">${part.partssource_price.toFixed(2)}</dd>
+                </div>
+              )}
+              {part.outrightListPrice != null && (
+                <div className="contents">
+                  <dt className="text-gray-500 font-medium">Outright Price</dt>
+                  <dd className="text-gray-800">${part.outrightListPrice.toFixed(2)}</dd>
+                </div>
+              )}
+              {part.oemListPrice != null && (
+                <div className="contents">
+                  <dt className="text-gray-500 font-medium">OEM Price</dt>
+                  <dd className="text-gray-800">${part.oemListPrice.toFixed(2)}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+        )}
+
         {/* Details and attributes */}
         <div className="px-6 pb-6">
           <DetailSection title="Details" data={part.details} />
